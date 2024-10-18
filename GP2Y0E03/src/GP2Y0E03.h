@@ -4,98 +4,46 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-// Constructor implementation
-GP2Y0E03::GP2Y0E03(TwoWire &wire, uint8_t address)
-    : _wire(wire), _addr(address) {}
-
-// Initialize using the default I2C address
-void GP2Y0E03::init(int vout)
+class GP2Y0E03
 {
-    _wire.begin();
-    _init_sensor(vout);
-}
+public:
+    // Constructor that accepts a TwoWire object
+    GP2Y0E03(TwoWire &wire = Wire, uint8_t address = 0x40);
 
-// Initialize with a specified I2C address
-void GP2Y0E03::init(int vout, uint8_t address)
-{
-    _addr = address;
-    _wire.begin();
-    _init_sensor(vout);
-}
+    // Method to initialize with the default I2C address
+    void init(int voutPin);
+
+    // Method to initialize with a specified I2C address
+    void init(int voutPin, uint8_t address);
 
 #ifdef ESP32 || ESP8266
-// Initialize with custom SDA and SCL pins
-void GP2Y0E03::init(int vout, int sda, int scl)
-{
-    _wire.begin(sda, scl);
-    _init_sensor(vout);
-}
+    // Method to initialize with custom SDA and SCL pins
+    void init(int voutPin, int sda, int scl);
 
-// Initialize with custom SDA, SCL pins and a specific I2C address
-void GP2Y0E03::init(int vout, int sda, int scl, uint8_t address)
-{
-    _addr = address;
-    _wire.begin(sda, scl, address);
-    _init_sensor(vout);
-}
+    // Method to initialize with custom SDA, SCL pins and I2C address
+    void init(int voutPin, int sda, int scl, uint8_t address);
 #endif
 
-void GP2Y0E03::_init_sensor(int vout)
-{
-    _vout = vout;
-    calibrateAnalog(448, 289, 3, 30);
-    if (_vout != -1)
-    {
-        pinMode(_vout, INPUT);
-    }
+    // Method to read the distance in cm from the sensor
+    int distDigital();
 
-    _wire.beginTransmission(_addr);
-    _wire.write(0x35);
-    _wire.endTransmission();
+    // Method to read the distance in cm from the sensor
+    int distAnalog();
 
-    _wire.requestFrom(_addr, 1);
-    if (1 <= Wire.available())
-    {
-        _shift = Wire.read();
-    }
-}
+    // Method to read analog voltage output (vout) from sensor
+    int vout();
 
-int GP2Y0E03::vout()
-{
-    return analogRead(_vout);
-}
+    // Method to calibrate vout to distance
+    void calibrateAnalog(int voutMin, int voutMax, int distMin, int distMax);
 
-void GP2Y0E03::calibrateAnalog(int voutMin, int voutMax, int distMin, int distMax)
-{
-    _cal[0] = voutMin;
-    _cal[1] = voutMax;
-    _cal[2] = distMin;
-    _cal[3] = distMax;
-}
+private:
+    int _addr; // I2C address of the sensor
+    uint8_t _shift;
+    int _voutPin;   // Pin for analog readings
+    int _cal[4];    // Calibration params for analog readings
+    TwoWire &_wire; // Reference to the TwoWire object
 
-// Method to read the distance via from the sensor
-int GP2Y0E03::distDigital()
-{
-    _wire.beginTransmission(_addr);
-    _wire.write(0x5E);
-    _wire.endTransmission();
-
-    _wire.requestFrom(_addr, 2);
-    if (_wire.available() != 2)
-        return -1;
-
-    uint8_t reg0 = _wire.read();
-    uint8_t reg1 = _wire.read();
-    int dist = (reg0 * 16 + reg1) / 16 / (int)pow(2, _shift);
-
-    return dist > 60 ? -1 : dist;
-}
-
-// Method to read the distance via vout from the sensor
-int GP2Y0E03::distAnalog()
-{
-    int dist = map(vout(), _cal[0], _cal[1], _cal[2], _cal[3]);
-    return dist > 60 ? -1 : dist;
-}
+    void _init_sensor(int voutPin); // Initializes GP2Y0E03
+};
 
 #endif // GP2Y0E03_H
