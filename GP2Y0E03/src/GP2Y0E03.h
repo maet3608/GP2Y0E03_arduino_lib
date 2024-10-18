@@ -1,4 +1,8 @@
-#include "GP2Y0E03.h"
+#ifndef GP2Y0E03_H
+#define GP2Y0E03_H
+
+#include <Arduino.h>
+#include <Wire.h>
 
 // Constructor implementation
 GP2Y0E03::GP2Y0E03(TwoWire &wire, uint8_t address)
@@ -93,3 +97,5 @@ int GP2Y0E03::distAnalog()
     int dist = map(vout(), _cal[0], _cal[1], _cal[2], _cal[3]);
     return dist > 60 ? -1 : dist;
 }
+
+#endif // GP2Y0E03_H
