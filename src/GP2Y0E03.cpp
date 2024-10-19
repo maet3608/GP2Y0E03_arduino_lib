@@ -12,11 +12,11 @@ void GP2Y0E03::init(int vout)
 }
 
 // Initialize with a specified I2C address
-void GP2Y0E03::init(int voutPin, uint8_t address)
+void GP2Y0E03::init(int vout, uint8_t address)
 {
     _addr = address;
     _wire.begin();
-    _init_sensor(voutPin);
+    _init_sensor(vout);
 }
 
 #ifdef ESP32 || ESP8266
