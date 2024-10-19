@@ -9,7 +9,20 @@ For more details see
 [GP2Y0E03 Datasheet](https://www.makerguides.com/wp-content/uploads/2024/10/GP2Y0E03-datasheet.pdf)
 [GP2Y0E03 Application Notes](https://www.makerguides.com/wp-content/uploads/2024/10/GP2Y0E03-application-notes.pdf)
 
+## Packaging
 
+Just zip up all the contents as zip file or download this repository as a .zip from GitHub via
+`Code -> Download ZIP`
+
+## Using library
+
+In Arduino IDE menu, go to `Sketch -> Include Libray -> Add .ZIP Library...` and then select the zipped library.
+
+After including it, you can add the include headers to your current sketch with `Sketch -> Include Library -> TOF10120`.
+
+## Running examples
+
+You can open the example from the Arduino IDE by going to the menu `File -> Examples -> GP2Y0E03 -> GP2Y0E03_example`.
 
 ## Example 
 
