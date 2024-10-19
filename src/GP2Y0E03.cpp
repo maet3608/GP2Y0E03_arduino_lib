@@ -5,10 +5,10 @@ GP2Y0E03::GP2Y0E03(TwoWire &wire, uint8_t address)
     : _wire(wire), _addr(address) {}
 
 // Initialize using the default I2C address
-void GP2Y0E03::init(int voutPin)
+void GP2Y0E03::init(int vout)
 {
     _wire.begin();
-    _init_sensor(voutPin);
+    _init_sensor(vout);
 }
 
 // Initialize with a specified I2C address
@@ -21,28 +21,28 @@ void GP2Y0E03::init(int voutPin, uint8_t address)
 
 #ifdef ESP32 || ESP8266
 // Initialize with custom SDA and SCL pins
-void GP2Y0E03::init(int voutPin, int sda, int scl)
+void GP2Y0E03::init(int vout, int sda, int scl)
 {
     _wire.begin(sda, scl);
-    _init_sensor(voutPin);
+    _init_sensor(vout);
 }
 
 // Initialize with custom SDA, SCL pins and a specific I2C address
-void GP2Y0E03::init(int voutPin, int sda, int scl, uint8_t address)
+void GP2Y0E03::init(int vout, int sda, int scl, uint8_t address)
 {
     _addr = address;
     _wire.begin(sda, scl, address);
-    _init_sensor(voutPin);
+    _init_sensor(vout);
 }
 #endif
 
-void GP2Y0E03::_init_sensor(int voutPin)
+void GP2Y0E03::_init_sensor(int vout)
 {
-    _voutPin = voutPin;
+    _vout = vout;
     calibrateAnalog(448, 289, 3, 30);
-    if (_voutPin != -1)
+    if (_vout != -1)
     {
-        pinMode(_voutPin, INPUT);
+        pinMode(_vout, INPUT);
     }
 
     _wire.beginTransmission(_addr);
@@ -58,7 +58,7 @@ void GP2Y0E03::_init_sensor(int voutPin)
 
 int GP2Y0E03::vout()
 {
-    return analogRead(_voutPin);
+    return analogRead(_vout);
 }
 
 void GP2Y0E03::calibrateAnalog(int voutMin, int voutMax, int distMin, int distMax)

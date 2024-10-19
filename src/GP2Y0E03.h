@@ -11,7 +11,7 @@ public:
     GP2Y0E03(TwoWire &wire = Wire, uint8_t address = 0x40);
 
     // Method to initialize with the default I2C address
-    void init(int voutPin);
+    void init(int vout);
 
     // Method to initialize with a specified I2C address
     void init(int voutPin, uint8_t address);
@@ -39,7 +39,7 @@ public:
 private:
     int _addr; // I2C address of the sensor
     uint8_t _shift;
-    int _voutPin;   // Pin for analog readings
+    int _vout;      // Pin for analog readings
     int _cal[4];    // Calibration params for analog readings
     TwoWire &_wire; // Reference to the TwoWire object
 
