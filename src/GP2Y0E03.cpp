@@ -1,20 +1,11 @@
 #include "GP2Y0E03.h"
 
 // Constructor implementation
-GP2Y0E03::GP2Y0E03(TwoWire &wire, uint8_t address)
-    : _wire(wire), _addr(address) {}
+GP2Y0E03::GP2Y0E03(uint8_t address)
+    : _addr(address) {}
 
-// Initialize using the default I2C address
 void GP2Y0E03::init(int vout)
 {
-    _wire.begin();
-    _init_sensor(vout);
-}
-
-// Initialize with a specified I2C address
-void GP2Y0E03::init(int vout, uint8_t address)
-{
-    _addr = address;
     _wire.begin();
     _init_sensor(vout);
 }
@@ -27,13 +18,13 @@ void GP2Y0E03::init(int vout, int sda, int scl)
     _init_sensor(vout);
 }
 
-// Initialize with custom SDA, SCL pins and a specific I2C address
-void GP2Y0E03::init(int vout, int sda, int scl, uint8_t address)
+// Initialize with custom SDA and SCL pins
+void GP2Y0E03::init(int sda, int scl)
 {
-    _addr = address;
-    _wire.begin(sda, scl, address);
-    _init_sensor(vout);
+    _wire.begin(sda, scl);
+    _init_sensor(-1);
 }
+
 #endif
 
 void GP2Y0E03::_init_sensor(int vout)
@@ -90,6 +81,8 @@ int GP2Y0E03::distDigital()
 // Method to read the distance via vout from the sensor
 int GP2Y0E03::distAnalog()
 {
+    if (_vout == -1)
+        return -1;
     int dist = map(vout(), _cal[0], _cal[1], _cal[2], _cal[3]);
     return dist > 60 ? -1 : dist;
 }
